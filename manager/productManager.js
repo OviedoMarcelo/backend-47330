@@ -1,98 +1,115 @@
-class ProductManager {
+import fs from 'fs';
 
-    //#testing private variable
 
-    constructor() {
-        this.products = [];
+export default class ProductManager {
+
+    constructor(path) {
+        this.path = path;
     }
 
 
     //Methods
 
+    getProducts = async () => {
+        try {
+            if (fs.existsSync(this.path)) {
+                const data = await fs.promises.readFile(this.path, 'utf-8');
+                const products = JSON.parse(data, null, '\t');
+                return products;
+            }
+            else {
+                return [];
+            }
 
-    addProduct = (title, description, price, thumbail, code, stock) => {
-
-        const product = {
-            title,
-            description,
-            price,
-            thumbail,
-            code,
-            stock,
-
-        };
-        //Set product.id
-        this.products.length === 0 ? product.id = 1 : product.id = this.products[this.products.length - 1].id + 1;
-
-        if (
-            !title ||
-            !description ||
-            !price ||
-            !thumbail ||
-            !code ||
-            !stock
-        ) {
-            console.log('No se pudo agregar el producto. Todos los campos son obligatorios, verificar los mismos.')
-            return;
+        } catch (error) {
+            console.log(error)
         }
+    }
 
-        //Existing product code validator
-        const productCodeIndex = this.products.findIndex((product) => product.code === code);
-        if (productCodeIndex === -1) {
-            this.products.push(product)
-            console.log('Producto agregado correctamente :)')
-            return;
-        } else {
-            console.log(`El code ${product.code} del producto a agregar ya existe para el producto ${this.products[productCodeIndex].title}, no pudo agregarse.`)
-            return;
+    addProduct = async (product) => {
+
+        try {
+            //Read the products from a file
+            const products = await this.getProducts();
+            //Set product.id
+            products.length === 0 ? product.id = 1 : product.id = products[products.length - 1].id + 1;
+            if (
+                !product.title ||
+                !product.description ||
+                !product.price ||
+                !product.thumbail ||
+                !product.code ||
+                !product.stock
+            ) {
+                console.log('No se pudo agregar el producto. Todos los campos son obligatorios, verificar los mismos.')
+                return;
+            }
+            //Existing product code validator
+
+            const productCodeIndex = products.findIndex((prod) => prod.code === product.code);
+            if (productCodeIndex === -1) {
+                products.push(product)
+                fs.promises.writeFile(this.path, JSON.stringify(products, null, '\t'))
+                console.log('Producto agregado correctamente :)')
+                return;
+            } else {
+                console.log(`El code ${product.code} del producto a agregar ya existe para el producto ${products[productCodeIndex].title}, no pudo agregarse.`)
+                return;
+            }
+
+        } catch (error) {
+            console.log(error)
         }
 
     }
 
-    getProducts = () => {
-        return this.products;
+
+    getProductByID = async (id) => {
+        try {
+            const products = await this.getProducts();
+            const productId = products.find(product => product.id === id);
+            return (!productId) ? null : productId;
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    getProductByID = (id) => {
+    updateProduct = async (id, updateProduct) => {
 
-        const productId = this.products.find(product => product.id === id);
-        return (!productId) ? `Not Found: Producto con id ${id} no encontrado` : productId;
+        try {
+            const products = await this.getProducts();
+            const productIndex = products.findIndex(p => p.id === id);
+            if (productIndex === -1) {
+                console.log(`No se encontró el producto con el ID ${id} recibido, no se actualiza.`);
+                return;
+            }
+            const productToUpdate = products[productIndex];
+            const productUpdated = { ...productToUpdate, ...updateProduct };
+            products.splice(productIndex, 1, productUpdated);
+            fs.promises.writeFile(this.path, JSON.stringify(products, null, '\t'))
+            console.log(`Se actualiza correctamente el producto de ID ${id}  con los nuevos valores`)
 
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    deleteProduct = async (id) => {
+
+        try {
+            const products = await this.getProducts();
+            const productIndex = products.findIndex(p => p.id === id);
+            if (productIndex === -1) {
+                console.log('No se encontró el producto con el ID recibido, no se borra.');
+                return;
+            }
+            products.splice(productIndex, 1);
+            await fs.promises.writeFile(this.path, JSON.stringify(products, null, '\t'))
+            console.log(`Se eliminó el producto con ID ${id} correctamente.`);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
 }
-
-////Test space
-
-const product = new ProductManager();
-
-console.log('Todos los productos iniciales')
-console.log(product.getProducts());
-console.log('---------------------------')
-
-console.log('Agrego el primer producto')
-product.addProduct("Tomate rojo", "El mejor tomate", 200, "Sin imagen", "001", 25)
-console.log(product.getProducts());
-console.log('---------------------------')
-
-console.log('Agrego el segundo producto')
-product.addProduct("Lechuga", "La más rica y fresca", 400, "Sin imagen", "002", 10);
-console.log(product.getProducts());
-console.log('---------------------------')
-
-console.log('Agrego un producto con campos incompletos')
-product.addProduct("Lechuga", 400, "Sin imagen", "002",);
-console.log(product.getProducts());
-console.log('---------------------------')
-
-console.log('Agrego un producto con el code repetido')
-product.addProduct("Tomete amarillo", "Otro tomate", 250, "Sin imagen", "001", 8);
-console.log(product.getProducts());
-console.log('---------------------------')
-
-console.log('Muestro el producto con ID 4 que no existente')
-console.log(product.getProductByID(4));
-console.log('---------------------------')
-
-console.log('Muestro el producto con ID 1 existente')
-console.log(product.getProductByID(1));
