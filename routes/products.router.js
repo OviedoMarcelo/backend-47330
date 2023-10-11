@@ -44,7 +44,8 @@ router.post('/', async (req, res) => {
 
 router.put('/:pid', async (req, res) => {
     const product = req.body;
-    const productId = Number(req.params.cid);
+    const productId = Number(req.params.pid);
+    console.log(req.params.pid)
     const result = await productManager.updateProduct(productId, product)
     result ? res.send({ status: 'Success', message: 'Actualizado corectamente' }) : res.status(400).send({ status: 'error', error: 'No se puedo actualizar' });
 })
