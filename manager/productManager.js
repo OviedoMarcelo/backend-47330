@@ -10,6 +10,7 @@ export default class ProductManager {
 
     getProducts = async () => {
         try {
+            console.log(this.path)
             if (fs.existsSync(this.path)) {
                 const data = await fs.promises.readFile(this.path, 'utf-8');
                 const products = JSON.parse(data, null, '\t');
