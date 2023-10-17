@@ -3,12 +3,13 @@ import ProductManager from "../manager/productManager.js";
 
 const router = Router();
 
-const productManager = new ProductManager("./files/productos.json");
+const productManager = new ProductManager("../src/files/productos.json");
+
+
 
 router.get('/', async (req, res) => {
 
     const products = await productManager.getProducts();
-    console.log('estos')
     //If a 'limit' value exists in the query, return that number of elements. Otherwise, return the entire array.
     const limit = req.query.limit ? parseInt(req.query.limit) : products.length;
     res.send(products.slice(0, limit));
@@ -37,15 +38,15 @@ router.post('/', async (req, res) => {
         return res.status(400).send({ status: 'error', error: 'Incomplete or incorrect values' })
     }
     await productManager.addProduct(product);
+    const io = req.app.get('socketio');
+    io.emit('updateProducts', await productManager.getProducts());
     res.send({ status: 'succes', message: 'Product add' })
-
 })
 
 
 router.put('/:pid', async (req, res) => {
     const product = req.body;
     const productId = Number(req.params.pid);
-    console.log(req.params.pid)
     const result = await productManager.updateProduct(productId, product)
     result ? res.send({ status: 'Success', message: 'Actualizado corectamente' }) : res.status(400).send({ status: 'error', error: 'No se puedo actualizar' });
 })
@@ -55,7 +56,15 @@ router.delete('/:pid', async (req, res) => {
     const productId = Number(req.params.pid);
     const result = await productManager.deleteProduct(productId)
     console.log(result)
-    result ? res.send({ status: 'Success', message: 'Eliminado correctamente' }) : res.status(400).send({ status: 'error', error: 'No se puedo eliminar' });
+    if (result) {
+        const io = req.app.get('socketio');
+        io.emit('updateProducts', await productManager.getProducts());
+        res.send({ status: 'Success', message: 'Eliminado corectamente' })
+    } else {
+        res.status(400).send({ status: 'error', error: 'No se puedo eliminar' });
+    }
+
+
 })
 
 export default router;

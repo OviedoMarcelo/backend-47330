@@ -10,7 +10,6 @@ export default class ProductManager {
 
     getProducts = async () => {
         try {
-            console.log(this.path)
             if (fs.existsSync(this.path)) {
                 const data = await fs.promises.readFile(this.path, 'utf-8');
                 const products = JSON.parse(data, null, '\t');
@@ -52,7 +51,7 @@ export default class ProductManager {
                 }
                 products.push(product)
                 fs.promises.writeFile(this.path, JSON.stringify(products, null, '\t'))
-                console.log('Producto agregado correctamente :)')
+                console.log('Producto agregado correctamente :)');
                 return;
             } else {
                 console.log(`El code ${product.code} del producto a agregar ya existe para el producto ${products[productCodeIndex].title}, no pudo agregarse.`)
