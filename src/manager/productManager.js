@@ -37,7 +37,7 @@ export default class ProductManager {
                 !product.price ||
                 !product.code ||
                 !product.stock ||
-                !product.category
+                !product.thumbnail
             ) {
                 console.log('No se pudo agregar el producto. Todos los campos son obligatorios, verificar los mismos.')
                 return;

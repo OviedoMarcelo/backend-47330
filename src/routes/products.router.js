@@ -25,7 +25,7 @@ router.get('/:pid', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-
+    console.log(req.body)
     const product = req.body;
     if (
         !product.title ||
@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
         !product.price ||
         !product.code ||
         !product.stock ||
-        !product.category
+        !product.thumbnail
     ) {
         return res.status(400).send({ status: 'error', error: 'Incomplete or incorrect values' })
     }

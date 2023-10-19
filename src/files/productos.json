@@ -141,5 +141,15 @@
 		"category": "iphone",
 		"id": 14,
 		"status": true
+	},
+	{
+		"title": "Prueba",
+		"description": "Prueba",
+		"price": "1",
+		"thumbnail": "http://www.prueba.com",
+		"code": "600",
+		"stock": "1",
+		"id": 15,
+		"status": true
 	}
 ]
