@@ -2,18 +2,26 @@
   "name": "clase2-entrega",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node .",
+    "dev": "nodemon ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "class",
+    "express",
+    "template-engine",
+    "mongodb"
+  ],
+  "author": "Marcelo Oviedo",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "express-handlebars": "^7.1.2",
+    "mongoose": "^7.6.3",
     "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.0.1",
     "socket.io": "^4.7.2"
   }
 }

@@ -1,5 +1,6 @@
 import express from "express";
 import handlerbars from 'express-handlebars';
+import handlebars from 'handlebars';
 import viewsRouter from './routes/views.router.js';
 import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
@@ -15,9 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(`${__dirname}/public`));
 
 //Config handlebars
+handlebars.registerPartial('partials', `${__dirname}/partials`);
 app.engine('handlebars', handlerbars.engine());
 app.set('views', `${__dirname}/views`)
-app.set('view engine', 'handlebars')
+app.set('view engine', 'hbs')
+
 
 
 //routes
@@ -29,14 +32,17 @@ app.use('/api/carts', cartsRouter);
 
 //error controller middleware, allways at the end
 
-app.use((err, req, res, next) => {
-    console.log(err);
-    res.status(500).send('Error no controlado');
-})
+app.use((error, req, res, next) => {
+    const message = `Ah ocurrido un error inesperado 😨: ${error.message}`;
+    console.error(message);
+    res.status(500).json({ message });
+});
 
-const server = app.listen(8080, () => console.log('Server running on port 8080'));
 
 //io configuration
 
-const io = new Server(server);
-app.set('socketio', io);
+/* const io = new Server(server);
+app.set('socketio', io); */
+
+
+export default app;

@@ -10,7 +10,6 @@ const products = new ProductManager("../src/files/productos.json");
 //Handlebars render
 router.get('/home', async (req, res) => {
     const prod = await products.getProducts();
-    console.log(prod)
     res.render('home', {prod});
 })
 

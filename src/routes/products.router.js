@@ -1,69 +1,80 @@
 import { Router } from "express";
-import ProductManager from "../manager/productManager.js";
+import Product from "../dbManagers/ProductManager.js";
 
 const router = Router();
 
-const productManager = new ProductManager("../src/files/productos.json");
+const productManager = new Product();
 
-
-
+/* Get all */
 router.get('/', async (req, res) => {
-
-    const products = await productManager.getProducts();
-    //If a 'limit' value exists in the query, return that number of elements. Otherwise, return the entire array.
-    const limit = req.query.limit ? parseInt(req.query.limit) : products.length;
-    res.send(products.slice(0, limit));
-
+    try {
+        const { page = 1, limit = 10, sort = null, category = null } = req.query;
+        const query = {}
+        const options = {
+            page: page,
+            limit: limit
+        }
+        const prods = await productManager.getAll(query, options);
+        res.send({ status: 'success', prods });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ status: error, error });
+    }
 })
 
+/* Get byId */
 router.get('/:pid', async (req, res) => {
 
-    const prodId = parseInt(req.params.pid);
-    const product = await productManager.getProductByID(prodId)
-    product ? res.send(product) : res.send({ error: 'Product not found' });
+    const prodId = req.params.pid;
+    const product = await productManager.getById(prodId)
+    product ? res.send({ status: 'success', payload: product }) : res.send({ error: 'Product not found' });
 
 })
 
+/* Add  */
 router.post('/', async (req, res) => {
-    console.log(req.body)
-    const product = req.body;
-    if (
-        !product.title ||
-        !product.description ||
-        !product.price ||
-        !product.code ||
-        !product.stock ||
-        !product.thumbnail
-    ) {
-        return res.status(400).send({ status: 'error', error: 'Incomplete or incorrect values' })
+    try {
+        const product = req.body;
+        if (
+            !product.title ||
+            !product.description ||
+            !product.price ||
+            !product.code ||
+            !product.stock ||
+            !product.category
+        ) {
+            return res.status(400).send({ status: 'error', error: 'Incomplete or incorrect values' })
+        }
+        const result = await productManager.add(product);
+        const io = req.app.get('socketio');
+        io.emit('updateProducts', await productManager.getAll());
+        res.send({ status: 'success', payload: result })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ status: error, error });
     }
-    await productManager.addProduct(product);
-    const io = req.app.get('socketio');
-    io.emit('updateProducts', await productManager.getProducts());
-    res.send({ status: 'succes', message: 'Product add' })
+
 })
 
-
+/* Update */
 router.put('/:pid', async (req, res) => {
     const product = req.body;
-    const productId = Number(req.params.pid);
-    const result = await productManager.updateProduct(productId, product)
-    result ? res.send({ status: 'Success', message: 'Actualizado corectamente' }) : res.status(400).send({ status: 'error', error: 'No se puedo actualizar' });
+    const productId = req.params.pid;
+    const result = await productManager.update(productId, product)
+    result ? res.send({ status: 'success', payload: result }) : res.status(400).send({ status: 'error', error: 'No se puedo actualizar' });
 })
 
-
+/* Delete */
 router.delete('/:pid', async (req, res) => {
-    const productId = Number(req.params.pid);
-    const result = await productManager.deleteProduct(productId)
-    console.log(result)
-    if (result) {
+    const productId = req.params.pid;
+    const result = await productManager.delete(productId)
+    if (result != null) {
         const io = req.app.get('socketio');
-        io.emit('updateProducts', await productManager.getProducts());
+        /* io.emit('updateProducts', await productManager.getAll()); */
         res.send({ status: 'Success', message: 'Eliminado corectamente' })
     } else {
-        res.status(400).send({ status: 'error', error: 'No se puedo eliminar' });
+        res.status(400).send({ status: 'error', error: 'No se encontró el elemento a eliminar' });
     }
-
 
 })
 
