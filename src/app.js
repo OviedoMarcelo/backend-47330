@@ -5,7 +5,9 @@ import viewsRouter from './routes/views.router.js';
 import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
 import __dirname from "./utils.js";
-import { Server } from "socket.io";
+
+
+
 
 const app = express();
 
@@ -19,7 +21,7 @@ app.use(express.static(`${__dirname}/public`));
 handlebars.registerPartial('partials', `${__dirname}/partials`);
 app.engine('handlebars', handlerbars.engine());
 app.set('views', `${__dirname}/views`)
-app.set('view engine', 'hbs')
+app.set('view engine', 'handlebars')
 
 
 
@@ -38,11 +40,6 @@ app.use((error, req, res, next) => {
     res.status(500).json({ message });
 });
 
-
-//io configuration
-
-/* const io = new Server(server);
-app.set('socketio', io); */
 
 
 export default app;

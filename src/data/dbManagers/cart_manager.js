@@ -1,5 +1,5 @@
 import CartModel from '../models/cart_model.js';
-import { Exception } from '../utils.js';
+import { Exception } from '../../utils.js';
 
 export default class ProductManager {
 

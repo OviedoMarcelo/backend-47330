@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2'
 
-const productSchema  = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
@@ -10,7 +11,7 @@ const productSchema  = new mongoose.Schema({
         required: true
     },
     price: {
-        type: String,
+        type: Number,
         required: true
     },
     stock: {
@@ -22,7 +23,7 @@ const productSchema  = new mongoose.Schema({
         default: ["https://st.depositphotos.com/1987177/3470/v/600/depositphotos_34700099-stock-illustration-no-photo-available-or-missing.jpg"]
     },
     code: {
-        type: Number,
+        type: String,
         required: true,
         unique: true,
     },
@@ -35,9 +36,10 @@ const productSchema  = new mongoose.Schema({
         type: String,
         index: true,
         required: true,
-        enum: ["cafe", "maquina","accesorio"]
+        enum: ["android", "iphone", "accesorio"]
     }
 }, { timestamps: true });
 
+productSchema.plugin(mongoosePaginate);
 
 export default mongoose.model('products', productSchema);

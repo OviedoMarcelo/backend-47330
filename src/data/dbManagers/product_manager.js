@@ -1,10 +1,11 @@
 import ProductModel from '../models/product_model.js';
-import { Exception } from '../utils.js';
+import { Exception } from '../../utils.js';
 
 export default class ProductManager {
 
-    static get(query = {}) {
+    static async get(query = {}, options) {
         const criteria = {};
+        options.lean = true;
         if (query.product) {
             criteria.product = query.course;
         }
