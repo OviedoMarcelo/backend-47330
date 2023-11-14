@@ -26,7 +26,6 @@ router.get('/home', async (req, res) => {
             query.category = category
         }
         const prods = await ProductManager.get(query, options);
-        console.log(prods)
         const user =  "Marcelo"
         res.render('home', { prods, user });
     } catch (error) {
@@ -37,7 +36,7 @@ router.get('/home', async (req, res) => {
 
 router.get('/realtimeproducts', async (req, res) => {
     try {
-        const prods = await productManager.get();
+        const prods = await ProductManager.get();
         res.render('realTimeProducts', { prods });
     } catch (error) {
         console.log(error);
@@ -65,7 +64,7 @@ router.get('/chat', (req, res) => {
 router.get('/cart/:cid', async (req, res) => {
     try {
         const idCart = req.params.cid;
-        const cart = await cartManager.getById(idCart);
+        const cart = await CartManager.getById(idCart);
         res.render('cart', { cart })
     } catch (error) {
         console.log(error)
@@ -77,9 +76,9 @@ router.get('/home/:cid/product/:pid', async (req, res) => {
         const refererUrl = req.headers.referer;
         const cartId = req.params.cid;
         const productId = req.params.pid;
-        const product = await productManager.getById(productId);
-        const cart = await cartManager.getById(cartId);
-        cartManager.addToCart(cart._id, product._id);
+        const product = await ProductManager.getById(productId);
+        const cart = await CartManager.getById(cartId);
+        CartManager.addToCart(cart._id, product._id);
         res.redirect(refererUrl)
     } catch (error) {
         console.log(error);

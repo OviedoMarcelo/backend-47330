@@ -1,9 +1,8 @@
 import { Router } from "express";
-import Product from "../data/dbManagers/product_manager.js";
+import ProductManager from "../data/dbManagers/product_manager.js";
 
 const router = Router();
 
-const productManager = new Product();
 
 /* Get all */
 router.get('/', async (req, res) => {
@@ -14,7 +13,7 @@ router.get('/', async (req, res) => {
             page: page,
             limit: limit
         }
-        const prods = await productManager.getAll(query, options);
+        const prods = await ProductManager.get(query, options);
         res.send({ status: 'success', prods });
     } catch (error) {
         console.log(error);
@@ -26,7 +25,7 @@ router.get('/', async (req, res) => {
 router.get('/:pid', async (req, res) => {
 
     const prodId = req.params.pid;
-    const product = await productManager.getById(prodId)
+    const product = await ProductManager.getById(prodId)
     product ? res.send({ status: 'success', payload: product }) : res.send({ error: 'Product not found' });
 
 })
@@ -45,9 +44,9 @@ router.post('/', async (req, res) => {
         ) {
             return res.status(400).send({ status: 'error', error: 'Incomplete or incorrect values' })
         }
-        const result = await productManager.add(product);
+        const result = await ProductManager.add(product);
         const io = req.app.get('socketio');
-        io.emit('updateProducts', await productManager.getAll());
+        io.emit('updateProducts', await ProductManager.getAll());
         res.send({ status: 'success', payload: result })
     } catch (error) {
         console.log(error);
@@ -60,14 +59,14 @@ router.post('/', async (req, res) => {
 router.put('/:pid', async (req, res) => {
     const product = req.body;
     const productId = req.params.pid;
-    const result = await productManager.update(productId, product)
+    const result = await ProductManager.update(productId, product)
     result ? res.send({ status: 'success', payload: result }) : res.status(400).send({ status: 'error', error: 'No se puedo actualizar' });
 })
 
 /* Delete */
 router.delete('/:pid', async (req, res) => {
     const productId = req.params.pid;
-    const result = await productManager.delete(productId)
+    const result = await ProductManager.delete(productId)
     if (result != null) {
         const io = req.app.get('socketio');
         /* io.emit('updateProducts', await productManager.getAll()); */

@@ -33,14 +33,14 @@ export default class ProductManager {
     }
 
     static async create(data) {
-        const result = await productModel.create(data);
+        const result = await ProductModel.create(data);
         console.log('Producto creado correctamente 😁');
         return product;
     }
 
 
     static async updateById(pid, data) {
-        const result = await productModel.findByIdAndUpdate(id, productUpdated, { new: true });
+        const result = await ProductModel.findByIdAndUpdate(id, productUpdated, { new: true });
         console.log('Producto actualizado correctamente 😁');
         return result;
     }
