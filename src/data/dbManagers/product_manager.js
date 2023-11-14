@@ -3,17 +3,29 @@ import { Exception } from '../../utils.js';
 
 export default class ProductManager {
 
-    static async get(query = {}, options) {
-        const criteria = {};
-        options.lean = true;
-        if (query.product) {
-            criteria.product = query.course;
-        }
-        return ProductModel.find(criteria);
+    constructor() {
+        console.log('Create a product instance')
     }
 
-    static async getById(sid) {
-        const product = await ProductModel.findById(sid);
+    static async get (query = {}, options) {
+        options.lean = true;
+        const products = await ProductModel.paginate(query, options);
+        return ({
+            payload: products.docs,
+            totalPage: products.totalPages,
+            prevPage: products.prevPage,
+            nextPage: products.nextPage,
+            page: products.page,
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            prevLink: products.hasPrevPage ? `/home?page=${products.prevPage}` : null,
+            nextLink: products.hasNextPage ? `/home?page=${products.nextPage}` : null,
+        });
+    }
+
+
+    static async getById(pid) {
+        const product = await ProductModel.findById(pid).lean();
         if (!product) {
             throw new Exception('No existe el producto 😨', 404);
         }
@@ -21,28 +33,25 @@ export default class ProductManager {
     }
 
     static async create(data) {
-        const product = await ProductModel.create(data);
+        const result = await productModel.create(data);
         console.log('Producto creado correctamente 😁');
         return product;
     }
 
-    static async updateById(sid, data) {
-        const product = await ProductModel.findById(sid);
-        if (!product) {
-            throw new Exception('No existe el producto 😨', 404);
-        }
-        const criteria = { _id: sid };
-        const operation = { $set: data };
-        await ProductModel.updateOne(criteria, operation);
+
+    static async updateById(pid, data) {
+        const result = await productModel.findByIdAndUpdate(id, productUpdated, { new: true });
         console.log('Producto actualizado correctamente 😁');
+        return result;
     }
 
-    static async deleteById(sid) {
+
+    static async deleteById(pid) {
         const product = await ProductModel.findById(sid);
         if (!product) {
             throw new Exception('No existe el producto 😨', 404);
         }
-        const criteria = { _id: sid };
+        const criteria = { _id: pid };
         await ProductModel.deleteOne(criteria);
         console.log('Producto eliminado correctamente 😑');
     }

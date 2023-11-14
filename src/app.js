@@ -6,9 +6,6 @@ import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
 import __dirname from "./utils.js";
 
-
-
-
 const app = express();
 
 //config params
@@ -23,6 +20,9 @@ app.engine('handlebars', handlerbars.engine());
 app.set('views', `${__dirname}/views`)
 app.set('view engine', 'handlebars')
 
+handlebars.registerHelper('eq', function (a, b, options) {
+    return a === b ? options.fn(this) : options.inverse(this);
+});
 
 
 //routes

@@ -1,9 +1,9 @@
 import CartModel from '../models/cart_model.js';
 import { Exception } from '../../utils.js';
 
-export default class ProductManager {
+export default class CartManager {
 
-    static get(query = {}) {
+    static async get(query = {}, options) {
         const criteria = {};
         if (query.cart) {
             criteria.cart = query.cart;

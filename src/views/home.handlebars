@@ -1,19 +1,109 @@
-<div class="container-fluid">
-  <p>Todos nuestros productos</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda</title>
+</head>
+<body>
+  {{> navbar user=user}}
   <div class="row">
-    {{#each prod}}
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <h5 class="card-header">{{this.title}}</h5>
-        <img src="{{this.thumbnails.[0]}}" class="card-img-top" alt="{{this.title}}" />
-        <div class="card-body">
-          <p class="card-text">{{this.description}}</p>
-        </div>
+  {{! Filters and orders }}
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Filtros</h5>
+        <form action="/home" method="GET">
+  <div class="mb-3">
+    <label for="categoryFilter" class="form-label">Categoría</label>
+    <select class="form-select" id="categoryFilter" name="category">
+      <option value="">Todos</option>
+      <option value="android">Android</option>
+      <option value="iphone">IPhone</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label for="priceSort" class="form-label">Ordenar por precio</label>
+    <select class="form-select" id="priceSort" name="sort">
+      <option value="">Ninguno</option>
+      <option value="asc">Ascendente</option>
+      <option value="desc">Descendente</option>
+    </select>
+  </div>
+  <input type="submit" class="btn btn-primary" value="Aplicar filtros">
+</form>
       </div>
     </div>
-    {{/each}}
   </div>
+  {{! Product List }}
+  <div class="col-md-9">
+    <div class="row">
+      {{#each prods.payload}}
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <h5 class="card-header">{{this.title}}</h5>
+            <img
+              src="{{this.thumbnails.[0]}}"
+              class="card-img-top"
+              alt="{{this.title}}"
+            />
+            <div class="card-body">
+              <p class="card-text">{{this.price}}</p>
+              <p class="card-text">{{this.description}}</p>
+                <a class="btn btn-primary" href="/home/646cd94d548b590f3c07d5d8/product/{{this._id}}" role="button">Agregar al carrito</a>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+  {{!-- Navegation nav --}}
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    {{#if prods.hasPrevPage}}
+      <li class="page-item">
+        <a class="page-link" href="{{prods.prevLink}}" tabindex="-1" aria-disabled="true">Anterior</a>
+      </li>
+      {{else}}
+          <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+      </li>
+    {{/if}}
+    {{#eq prods.page 1}}
+      <li class="page-item active"><a class="page-link" href="#">{{prods.page}}</a></li>
+      <li class="page-item"><a class="page-link" href="/home?page={{prods.nextPage}}">{{prods.nextPage}}</a></li>
+      <li class="page-item"><a class="page-link" href="/home?page={{prods.totalPage}}">{{prods.totalPage}}</a></li>
+      {{else}}
+        {{#eq prods.page prods.totalPage}}
+        <li class="page-item"><a class="page-link" href="/home?page=1">1</a></li>
+        <li class="page-item"><a class="page-link" href="/home?page={{prods.prevPage}}">{{prods.prevPage}}</a></li>
+        <li class="page-item active"><a class="page-link" href="#">{{prods.totalPage}}</a></li>
+        {{else}}
+      <li class="page-item"><a class="page-link" href="/home?page=1">1</a></li>
+      <li class="page-item active"><a class="page-link" href="#">{{prods.page}}</a></li>
+      <li class="page-item"><a class="page-link" href="/home?page={{prods.totalPage}}">{{prods.totalPage}}</a></li>
+      {{/eq}}
+    {{/eq}}
+    {{#if prods.hasNextPage}}
+      <li class="page-item">
+        <a class="page-link" href="{{prods.nextLink}}" tabindex="-1" aria-disabled="true">Siguiente</a>
+      </li>
+      {{else}}
+          <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Siguiente</a>
+      </li>
+    {{/if}}
+  </ul>
+</nav>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+  crossorigin="anonymous"
+></script>
+
+</body>
+</html>
+

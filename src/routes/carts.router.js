@@ -38,7 +38,6 @@ router.post('/', async (req, res) => {
 })
 
 
-
 router.post('/:cid/product/:pid', async (req, res) => {
     const cartId = Number(req.params.cid);
     const productId = Number(req.params.pid);
@@ -49,7 +48,6 @@ router.post('/:cid/product/:pid', async (req, res) => {
     res.send({ status: 'succes', message: 'Producto add to Cart' })
 
 })
-
 
 
 export default router;
