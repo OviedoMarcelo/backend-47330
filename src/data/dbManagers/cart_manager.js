@@ -5,19 +5,12 @@ import { Exception } from '../../utils.js';
 export default class CartManager {
 
     static async get(query = {}, options) {
-        const criteria = {};
-        if (query.cart) {
-            criteria.cart = query.cart;
-        }
-        return CartModel.find(criteria);
+        const carts = await CartModel.find().lean();
+        return carts;
     }
 
     static async getById(cid) {
-        console.log(cid)
-        const cart = await CartModel.findById(cid);
-        if (!cart) {
-            throw new Exception('No existe el carrito de compras 😨', 404);
-        }
+        const cart = await CartModel.findById(cid).lean();
         return cart;
     }
 
