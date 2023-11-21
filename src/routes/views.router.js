@@ -37,6 +37,7 @@ router.get('/home', privateAccess, async (req, res) => {
         }
         const prods = await ProductManager.get(query, options);
         const user =  req.session.user
+        console.log('User dentro de la vista:',user)
         res.render('home', { prods, user });
 
     } catch (error) {
