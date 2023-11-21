@@ -36,8 +36,8 @@ router.get('/home', privateAccess, async (req, res) => {
             query.category = category
         }
         const prods = await ProductManager.get(query, options);
-        const user =  req.session.user
-        res.render('home', { prods, user });
+        const user = req.session.user
+        res.render('home', { prods, user, title: 'Home' });
 
     } catch (error) {
         console.log(error);
@@ -76,7 +76,7 @@ router.get('/cart/:cid', async (req, res) => {
     try {
         const idCart = req.params.cid;
         const cart = await CartManager.getById(idCart);
-        res.render('cart', { cart })
+        res.render('cart', { cart, title: 'Recupero de contraseña' })
     } catch (error) {
         console.log(error)
     }
@@ -98,11 +98,15 @@ router.get('/home/:cid/product/:pid', async (req, res) => {
 })
 
 router.get('/register', publicAccess, async (req, res) => {
-    res.render('register');
+    res.render('register', { title: 'Registro' });
 })
 
 router.get('/login', publicAccess, async (req, res) => {
-    res.render('login');
+    res.render('login', { title: 'Login' });
+})
+
+router.get('/recovery-password', publicAccess, async (req, res) => {
+    res.render('recoveryPassword', { title: 'Recupero de contraseña' });
 })
 
 export default router;

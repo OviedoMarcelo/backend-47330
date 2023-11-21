@@ -5,6 +5,7 @@ import { createHash, isValidPassword } from '../utils.js'
 //Session router
 const router = Router();
 
+//Register
 router.post('/register', async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
@@ -25,6 +26,8 @@ router.post('/register', async (req, res) => {
         return res.status(500).send({ status: 'error', error });
     }
 })
+
+//Login
 
 router.post('/login', async (req, res) => {
     try {
@@ -50,7 +53,27 @@ router.post('/login', async (req, res) => {
     }
 })
 
-//Async?
+//Recovery
+
+router.post('/recovery-password', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const exist = await userModel.findOne({ email });
+        if (!exist) return res.status(401).send({ status: 'error', error: 'El usuario o la contraseña indicada no son correctos 😢' });
+        //if the user exists
+        await userModel.updateOne({ email }, { $set: { password: createHash(password) } })
+        // Send success response
+        /*         res.send({ status: 'success', message: 'Password reestablecida correctamente' }); */
+        // Redirect to login */
+        res.redirect('/login');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ status: 'error', error: 'Ha ocurrido un error al reestablecer la contraseña' });
+    }
+})
+
+
+//Logout
 router.get('/logout', (req, res) => {
     req.session.destroy(error => {
         if (error) return res.status(500).send({ status: 'error', error: 'logout failed' });
