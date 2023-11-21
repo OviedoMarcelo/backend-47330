@@ -9,7 +9,7 @@ export const init = async () => {
         await mongoose.connect(MONGODB_URI);
         console.log('Database conected 🚀');
     } catch (error) {
-        console.log('Ah ocurrido un error al intentar conectarnos a la DB', error.message);
+        console.log('Ha ocurrido un error al intentar conectarnos a la DB 😥', error.message);
     }
 }
 

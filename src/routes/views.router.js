@@ -4,14 +4,24 @@ import CartManager from "../data/dbManagers/cart_manager.js";
 
 //Initialize router
 const router = Router();
-//Product manager
-const productManager = new ProductManager();
-console.log('aca')
-const cartManager = new CartManager();
+
+//Access Middleware
+
+const publicAccess = (req, res, next) => {
+    if (req.session.user) return res.redirect('/home');
+    next();
+}
+
+const privateAccess = (req, res, next) => {
+    if (!req.session.user) return res.redirect('/login');
+    next();
+}
+
 
 //Handlebars render
+//Handlebars render
 
-router.get('/home', async (req, res) => {
+router.get('/home', privateAccess, async (req, res) => {
     try {
         const { page = 1, limit = 10, sort = null, category = null } = req.query;
         const query = {}
@@ -26,8 +36,9 @@ router.get('/home', async (req, res) => {
             query.category = category
         }
         const prods = await ProductManager.get(query, options);
-        const user =  "Marcelo"
+        const user =  req.session.user
         res.render('home', { prods, user });
+
     } catch (error) {
         console.log(error);
     }
@@ -86,5 +97,12 @@ router.get('/home/:cid/product/:pid', async (req, res) => {
     }
 })
 
+router.get('/register', publicAccess, async (req, res) => {
+    res.render('register');
+})
+
+router.get('/login', publicAccess, async (req, res) => {
+    res.render('login');
+})
 
 export default router;
