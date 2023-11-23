@@ -8,6 +8,8 @@ import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
 import sessionRouter from './routes/session.router.js'
 import __dirname from "./utils.js";
+import passport from "passport";
+import { init as initPassportconfig } from './config/passport.config.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -46,6 +48,10 @@ handlebars.registerHelper('eq', function (a, b, options) {
     return a === b ? options.fn(this) : options.inverse(this);
 });
 
+//Passport initialize 
+initPassportconfig()
+app.use(passport.initialize())
+app.use(passport.session())
 
 //routes
 app.use('/', viewsRouter)
