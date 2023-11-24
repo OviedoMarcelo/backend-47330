@@ -7,13 +7,14 @@ import passport from "passport";
 const router = Router();
 
 //Register
-router.post('/register', passport.authenticate('register', { failureRedirect: '/register' }), async (req, res) => {
+router.post('/register', passport.authenticate('register', { failureRedirect: '/register' }), (req, res) => {
     res.redirect('/login')
 })
 
 //Login
 
-router.post('/login', passport.authenticate('login', { failureRedirect: '/login' }), async (req, res) => {
+router.post('/login', passport.authenticate('login', { failureRedirect: '/login' }), (req, res) => {
+    req.session.user = req.user
     res.redirect('/home')
 })
 

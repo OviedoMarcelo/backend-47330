@@ -1,7 +1,8 @@
-import userModel from "../data/models/users_model.js";
-import { createHash, isValidPassword } from '../utils.js'
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import userModel from "../data/models/users_model.js";
+import { createHash, isValidPassword } from '../utils.js'
+
 
 const opts = {
     usernameField: 'email', //Defino que el email será el campo principal de búsqueda
@@ -12,10 +13,10 @@ const opts = {
 export const init = () => {
 
     //Passport register
-    passport.use('register', new LocalStrategy(opts, async (req, username, password, done) => {
+    passport.use('register', new LocalStrategy(opts, async (req, email, password, done) => {
         try {
-            const { first_name, last_name, age } = req.body;
-            const user = await userModel.findOne({ email: username });
+            const { first_name, last_name, age, email } = req.body;
+            const user = await userModel.findOne({ email });
             if (user) {
                 return done(new Error('User already register 😢'))
             }
@@ -36,18 +37,18 @@ export const init = () => {
 
     //Passport Login
 
-    passport.use('login', new LocalStrategy(opts, async (username, password, done) => {
+    passport.use('login', new LocalStrategy(opts, async (req, email, password, done) => {
         try {
-            const user = await userModel.findOne({ email: username });
+            const user = await userModel.findOne({ email });
             if (!user) { //user exist?
                 return done(new Error('Correo o contraseña inválidos 😢')) //no se hizo el registro porque no existe el user
             }
-            if (!isValidPassword(password,user)) {
+            if (!isValidPassword(password, user)) {
                 return done(new Error('Correo o contraseña inválidos 😢')) //no se hizo el registro porque no existe el user
             }
             return done(null, user) //req.user = user
         } catch (error) {
-            return done(new Error(`Login Failed ${error.message} 😢`))
+            return done(error)
         }
     }));
 
