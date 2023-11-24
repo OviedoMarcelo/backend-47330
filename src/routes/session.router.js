@@ -38,6 +38,21 @@ router.post('/recovery-password', async (req, res) => {
 })
 
 
+//GIT HUB 
+
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }
+), async (req, res) => {
+    res.send({ status: 'success', message: 'User registered successfully' })
+});
+
+router.get('/github-callback', passport.authenticate('github', { failureRedirect: '/login' }
+), async (req, res) => {
+    req.session.user = req.user;
+    res.redirect('/home')
+})
+
+
+
 //Logout
 router.get('/logout', (req, res) => {
     req.session.destroy(error => {
