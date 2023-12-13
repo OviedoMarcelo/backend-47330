@@ -1,24 +1,26 @@
 import express from "express";
-import expressSesion from 'express-session'
-import MongoStore from "connect-mongo";
+/* import expressSesion from 'express-session' */
+/* import MongoStore from "connect-mongo"; */
 import handlerbars from 'express-handlebars';
 import handlebars from 'handlebars';
 import viewsRouter from './routes/views.router.js';
 import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
-import sessionRouter from './routes/session.router.js'
+import authRouter from './routes/auth.router.js'
 import __dirname from "./utils.js";
 import passport from "passport";
 import { init as initPassportconfig } from './config/passport.config.js'
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const SESSION_SECRET = process.env.SESSION_SECRET;
-const MONGODB_URI = process.env.MONGODB_URI;
+const COOKIE_SECRET = process.env.COOKIE_SECRET;
+/* const MONGODB_URI = process.env.MONGODB_URI; */
 
 const app = express();
 
-app.use(expressSesion({
+//Inhabilito para usar JWT + cookie parser
+/* app.use(expressSesion({
     store: MongoStore.create({
         mongoUrl: MONGODB_URI,
         mongoOptions: {},
@@ -27,8 +29,9 @@ app.use(expressSesion({
     secret: SESSION_SECRET,
     resave: true,
     saveUninitialized: true
-}))
+})) */
 
+app.use(cookieParser(COOKIE_SECRET));
 
 //config express params
 app.use(express.json());
@@ -51,7 +54,7 @@ handlebars.registerHelper('eq', function (a, b, options) {
 //Passport initialize 
 initPassportconfig()
 app.use(passport.initialize())
-app.use(passport.session())
+/* app.use(passport.session()) */
 
 //routes
 app.use('/', viewsRouter)
@@ -59,12 +62,12 @@ app.use('/', viewsRouter)
 //API Rest routes
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-app.use('/api/sessions', sessionRouter);
+app.use('/api/auth', authRouter);
 
 //error controller middleware, allways at the end
 
 app.use((error, req, res, next) => {
-    const message = `Ah ocurrido un error inesperado 😨: ${error.message}`;
+    const message = `Ah ocurrido un error inesperado 😨: ${error.message}}`;
     console.error(message);
     res.status(500).json({ message });
 });

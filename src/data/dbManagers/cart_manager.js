@@ -12,6 +12,17 @@ export default class CartManager {
         const cart = await CartModel.findById(cid).lean();
         return cart;
     }
+
+    static async getOrCreateCart(userId) {
+        const existingCart = await CartModel.findOne({ user: userId });
+        if (existingCart) {
+            return existingCart;
+        } else {
+            const newCart = await CartModel.create({ user: userId, products: [] });
+            return newCart;
+        }
+    }
+
     static async create(data) {
         const cart = await CartModel.create(data);
         console.log('Carrito creado correctamente 😁');
@@ -66,7 +77,7 @@ export default class CartManager {
             console.error('Error al actualizar el carrito:', error.message);
         }
     }
-    static async deleteProduct  (cartId, productId) {
+    static async deleteProduct(cartId, productId) {
         const result = await CartModel.updateOne(
             { _id: cartId },
             { $pull: { products: { product: productId } } }
@@ -76,7 +87,7 @@ export default class CartManager {
         }
         return { status: 'success', message: 'Producto eliminado del carrito' };
     };
-    static async deleteAllProducts (cartId)  {
+    static async deleteAllProducts(cartId) {
 
         const cart = await CartModel.findById(cartId);
         if (!cart) {
@@ -86,7 +97,7 @@ export default class CartManager {
         await cart.save();
         return { status: 'success', message: 'Se eliminaron todos los productos del carrito' };
     }
-    static async updateProductQuantity (cartId, productId, quantity)  {
+    static async updateProductQuantity(cartId, productId, quantity) {
         const cart = await CartModel.findById(cartId);
         console.log(cart);
         console.log(cartId)
@@ -106,7 +117,7 @@ export default class CartManager {
         console.log('La cantidad del producto ha sido actualizada exitosamente');
         return cart;
     }
-    static async updateCartProducts  (cartId, newProducts) {
+    static async updateCartProducts(cartId, newProducts) {
         const cart = await CartModel.findById(cartId);
         if (!cart) {
             throw new Error('El carrito no existe');

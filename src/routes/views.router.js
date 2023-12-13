@@ -7,21 +7,21 @@ const router = Router();
 
 //Access Middleware
 
-const publicAccess = (req, res, next) => {
+/* const publicAccess = (req, res, next) => {
     if (req.session.user) return res.redirect('/home');
     next();
 }
-
+cl
 const privateAccess = (req, res, next) => {
     if (!req.session.user) return res.redirect('/login');
     next();
 }
-
+ */
 
 //Handlebars render
 //Handlebars render
 
-router.get('/home', privateAccess, async (req, res) => {
+router.get('/home', async (req, res) => {
     try {
         const { page = 1, limit = 10, sort = null, category = null } = req.query;
         const query = {}
@@ -37,6 +37,7 @@ router.get('/home', privateAccess, async (req, res) => {
         }
         const prods = await ProductManager.get(query, options);
         const user = req.session.user
+        console.log('user: ', user, "prods: ", prods)
         res.render('home', { prods, user, title: 'Home' });
 
     } catch (error) {
@@ -97,15 +98,15 @@ router.get('/home/:cid/product/:pid', async (req, res) => {
     }
 })
 
-router.get('/register', publicAccess, async (req, res) => {
+router.get('/register', async (req, res) => {
     res.render('register', { title: 'Registro' });
 })
 
-router.get('/login', publicAccess, async (req, res) => {
+router.get('/login', async (req, res) => {
     res.render('login', { title: 'Login' });
 })
 
-router.get('/recovery-password', publicAccess, async (req, res) => {
+router.get('/recovery-password', async (req, res) => {
     res.render('recoveryPassword', { title: 'Recupero de contraseña' });
 })
 

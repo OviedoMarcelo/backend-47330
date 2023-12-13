@@ -62,7 +62,7 @@ router.put('/:cid/product/:pid', async (req, res) => {
         console.log(product)
         console.log(cart)
         if (!product || !cart || !quantity) {
-            res.status(400).send({ status: 'error', message: 'bad request or invalid' });
+            return res.status(400).send({ status: 'error', message: 'bad request or invalid' });
         }
         await CartManager.updateProductQuantity(cartId, productId, quantity)
         res.send({ status: 'success', message: 'Quantity updated succesfully' })
@@ -80,7 +80,7 @@ router.put('/:cid', async (req, res) => {
         const cartId = req.params.cid;
         const cart = await CartManager.getById(cartId);
         if (!cart || !products) {
-            res.status(400).send({ status: 'error', message: 'bad request or invalid' });
+            return res.status(400).send({ status: 'error', message: 'bad request or invalid' });
         }
         await CartManager.updateCartProducts(cartId, products)
         res.send({ status: 'success', message: 'Cart updated succesfully' })
