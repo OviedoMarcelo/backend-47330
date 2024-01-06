@@ -1,77 +1,56 @@
-import express from "express";
-/* import expressSesion from 'express-session' */
-/* import MongoStore from "connect-mongo"; */
-import handlerbars from 'express-handlebars';
-import handlebars from 'handlebars';
-import viewsRouter from './routes/views.router.js';
-import productsRouter from './routes/products.router.js';
-import cartsRouter from './routes/carts.router.js';
-import authRouter from './routes/auth.router.js'
-import __dirname from "./utils.js";
-import passport from "passport";
-import { init as initPassportconfig } from './config/passport.config.js'
-import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-dotenv.config();
+// Importing required modules and functions
+import express from 'express';
+import handlebars from 'express-handlebars';
+import path from 'path';
+import cors from 'cors';
+import passport from 'passport';
+import cookieParse from 'cookie-parser';
 
-const COOKIE_SECRET = process.env.COOKIE_SECRET;
-/* const MONGODB_URI = process.env.MONGODB_URI; */
+import indexRouter from './routers/views/index.router.js';
+import usersRouter from './routers/api/users.router.js';
+import authRouter from './routers/api/auth.router.js';
+import businessRouter from './routers/api/business.router.js';
+import ordersRouter from './routers/api/orders.router.js';
+import { Exception, __dirname } from './utils.js';
+import { init as initPassport } from './config/passport.config.js';
 
 const app = express();
 
-//Inhabilito para usar JWT + cookie parser
-/* app.use(expressSesion({
-    store: MongoStore.create({
-        mongoUrl: MONGODB_URI,
-        mongoOptions: {},
-        ttl: 120
-    }),
-    secret: SESSION_SECRET,
-    resave: true,
-    saveUninitialized: true
-})) */
+// Setting up CORS middleware to handle cross-origin resource sharing
+const corsOptions = {
+    origin: 'http://localhost:5500',
+    methods: ['GET', 'POST', 'PUT'],
+};
 
-app.use(cookieParser(COOKIE_SECRET));
-
-//config express params
+app.use(cors(corsOptions));
+app.use(cookieParse());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-//config to support static files
-app.use(express.static(`${__dirname}/public`));
+app.use(express.static(path.join(__dirname, '../public')));
+app.engine('handlebars', handlebars.engine());
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'handlebars');
 
+// Initializing Passport middleware
+initPassport();
 
-//Config handlebars
-app.engine('handlebars', handlerbars.engine());
-app.set('views', `${__dirname}/views`)
-app.set('view engine', 'handlebars')
+app.use(passport.initialize());
 
-//Aditional handlebars config
-handlebars.registerPartial('partials', `${__dirname}/partials`);
-handlebars.registerHelper('eq', function (a, b, options) {
-    return a === b ? options.fn(this) : options.inverse(this);
-});
-
-//Passport initialize 
-initPassportconfig()
-app.use(passport.initialize())
-/* app.use(passport.session()) */
-
-//routes
-app.use('/', viewsRouter)
-
-//API Rest routes
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
+// Setting up router middleware for different API endpoints
+app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/business', businessRouter);
+app.use('/api/orders', ordersRouter);
 
-//error controller middleware, allways at the end
+// Error handling middleware
+app.use((err, req, res, next) => {
+    if (err instanceof Exception) {
+        return res.status(err.status).json({ message: err.message });
+    }
 
-app.use((error, req, res, next) => {
-    const message = `Ah ocurrido un error inesperado 😨: ${error.message}}`;
-    console.error(message);
-    res.status(500).json({ message });
+    console.error(err.stack);
+    res.status(500).json({ message: 'Server Error' });
 });
-
-
 
 export default app;

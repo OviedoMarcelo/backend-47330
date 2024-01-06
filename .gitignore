@@ -6,3 +6,6 @@ node_modules/
 
 #Visual studio 
 .vscode/
+
+#Old version
+.old/
