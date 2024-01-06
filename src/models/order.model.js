@@ -9,13 +9,13 @@ const orderSchema = new mongoose.Schema({
         type: [{
             type: mongoose.Schema.Types.ObjectId,
         }],
-        ref: 'Products',
+        ref: 'Product',
         default: [],
     }
     ,
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users',
+        ref: 'User',
     },
     status: { type: String, default: 'pending', enum: ['pending', 'completed', 'cancelled'] },
     total: {
@@ -24,4 +24,4 @@ const orderSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-export default mongoose.model('Orders', orderSchema);
+export default mongoose.model('Order', orderSchema);
