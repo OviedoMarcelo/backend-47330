@@ -1,24 +1,33 @@
+// UsersController.js
+// This file defines the controller class for handling user-related actions.
+// The controller methods communicate with the UserService class to interact with the MongoDB database.
+
+import UserService from '../dao/user.mongodb.dao.js';
+
+import { NotFoundException } from '../utils.js';
+
 export default class UsersController {
-
-    static create = async (data) => {
-        console.log('method create called 🎈')
-        return ('create called 🚨')
+    // Method to retrieve all users from the database.
+    static getAll = () => {
+        return UserService.getAll();
     };
 
-    static getById = async (bid) => {
-        console.log('method getById called 🎈')
-        return ('getById called 🚨')
+    // Method to create a new user in the database.
+    static create = (data) => {
+        return UserService.create(data);
     };
 
-    static getAll = async () => {
-        console.log('method getAll called 🎈')
-        return ('getAll called 🚨')
+    // Method to retrieve a user by their unique identifier (uid).
+    static getById = async (uid) => {
+        const user = await UserService.getById(uid);
+        if (!user) {
+            throw new NotFoundException('Not found');
+        }
+        return user;
     };
 
-
-    static updateById = async (bid, data) => {
-        console.log('method updateById called 🎈')
-        return ('updateById called 🚨')
+    // Method to update a user by their unique identifier (uid).
+    static updateById = (uid, data) => {
+        return UserService.updateById(uid, data);
     };
-
 }

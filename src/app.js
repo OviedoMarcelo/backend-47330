@@ -5,11 +5,10 @@ import path from 'path';
 import cors from 'cors';
 import passport from 'passport';
 import cookieParse from 'cookie-parser';
-
 import indexRouter from './routers/views/index.router.js';
 import usersRouter from './routers/api/users.router.js';
 import authRouter from './routers/api/auth.router.js';
-import businessRouter from './routers/api/business.router.js';
+import productRouter from './routers/api/product.router.js';
 import ordersRouter from './routers/api/orders.router.js';
 import { Exception, __dirname } from './utils.js';
 import { init as initPassport } from './config/passport.config.js';
@@ -27,9 +26,18 @@ app.use(cookieParse());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-app.engine('handlebars', handlebars.engine());
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'handlebars');
+
+//Config handlebars
+app.engine('handlebars', handlerbars.engine());
+app.set('views', `${__dirname}/views`)
+app.set('view engine', 'handlebars')
+
+//Aditional handlebars config
+handlebars.registerPartial('partials', `${__dirname}/partials`);
+handlebars.registerHelper('eq', function (a, b, options) {
+    return a === b ? options.fn(this) : options.inverse(this);
+});
+
 
 // Initializing Passport middleware
 initPassport();
@@ -40,7 +48,7 @@ app.use(passport.initialize());
 app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
-app.use('/api/business', businessRouter);
+app.use('/api/business', productRouter);
 app.use('/api/orders', ordersRouter);
 
 // Error handling middleware
@@ -48,7 +56,6 @@ app.use((err, req, res, next) => {
     if (err instanceof Exception) {
         return res.status(err.status).json({ message: err.message });
     }
-
     console.error(err.stack);
     res.status(500).json({ message: 'Server Error' });
 });

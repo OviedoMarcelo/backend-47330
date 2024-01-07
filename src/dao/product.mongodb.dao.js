@@ -1,31 +1,30 @@
 // Product DAO module. It contains functions for CRUD operations.
-
-import ProductModel from '../models/product.model'
+import ProductModel from '../models/product.model.js'
 
 export default class ProductDao {
 
     // Create a new product in the database.
-    create = (data) => {
+    static create = (data) => {
         return ProductModel.create(data)
     }
 
     // Get all products from the database.
-    getall = () => {
+    static getAll = () => {
         return ProductModel.find();
     }
 
     // Get a product by ID from the database.
-    getById = (uid) => {
+    static getById = (uid) => {
         return ProductModel.findById(uid);
     }
 
     // Update a product by ID in the database.
-    updateById = (uid, data) => {
+    static updateById = (uid, data) => {
         return ProductModel.updateOne({ _id: uid }, { $set: data })
     }
 
     // Delete a product by ID from the database.
-    deleteById = (uid) => {
+    static deleteById = (uid) => {
         return ProductModel.deleteOne({ _id: uid })
     }
 

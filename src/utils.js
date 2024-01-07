@@ -52,3 +52,10 @@ export class BadRequestException extends Exception {
         super(message, 400);
     }
 }
+
+// Create a subclass of Exception for handling 403 errors
+export class ForbiddenException extends Exception {
+    constructor(message) {
+        super(message, 403);
+    }
+}

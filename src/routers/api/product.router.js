@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ProductController from "../../controller/business.controller.js";
+import ProductController from "../../controller/products.controller.js";
 
 const router = Router();
 
@@ -33,6 +33,18 @@ router.post('/', async (req, res, next) => {
         next(error);
     }
 });
+
+router.post('/:pid', async (req, res, next) => {
+    try {
+        const { body } = req;
+        const order = await ProductController.create(body);
+        res.status(201).json({ message: order });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 
 
 router.put('/:pid', async (req, res, next) => {
